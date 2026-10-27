@@ -1,0 +1,46 @@
+[workspace]
+members = [
+    "crates/dispatch-core",
+    "crates/dispatch-cli",
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["Dispatch Contributors"]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/dispatch-transfer/dispatch"
+
+[workspace.dependencies]
+# Async Runtime & I/O
+tokio = { version = "1.38", features = ["full"] }
+tokio-util = { version = "0.7", features = ["codec", "io"] }
+socket2 = { version = "0.5", features = ["all"] }
+
+# Cryptography & Security
+snow = { version = "0.9", features = ["default-resolver"] }
+blake3 = { version = "1.5", features = ["rayon"] }
+rand = "0.8"
+
+# Serialization & Framing
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+postcard = { version = "1.0", features = ["alloc"] }
+bytes = "1.6"
+
+# Error Handling & Utilities
+thiserror = "1.0"
+hex = "0.4"
+dirs = "5.0"
+network-interface = "1.1"
+fs2 = "0.4"
+
+# Logging & Observability
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
+
+# CLI & UX
+clap = { version = "4.4", features = ["derive", "cargo", "env"] }
+indicatif = { version = "0.17", features = ["tokio"] }
+console = "0.15"

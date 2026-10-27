@@ -1,0 +1,31 @@
+[package]
+name = "dispatch-cli"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Command-line interface for Dispatch LAN file transfer"
+
+[[bin]]
+name = "dispatch"
+path = "src/main.rs"
+
+[dependencies]
+# Internal Workspace Crate
+dispatch-core = { path = "../dispatch-core" }
+
+# Async Runtime
+tokio = { workspace = true }
+
+# CLI Parsing & User Interaction
+clap = { workspace = true }
+indicatif = { workspace = true }
+console = { workspace = true }
+
+# Logging & Diagnostics
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+
+# Utilities
+dirs = { workspace = true }
+hex = { workspace = true }
+network-interface = { workspace = true }

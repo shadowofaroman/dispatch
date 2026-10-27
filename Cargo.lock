@@ -429,6 +429,7 @@ dependencies = [
  "dispatch-core",
  "hex",
  "indicatif",
+ "network-interface",
  "tokio",
  "tracing",
  "tracing-subscriber",

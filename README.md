@@ -56,7 +56,7 @@ Dispatch is structured as a modular Cargo workspace:
 ### Linux / macOS
 ```bash
 # Clone the repository
-git clone https://github.com/dispatch-transfer/dispatch.git
+git clone https://github.com/shadowofaroman/dispatch.git
 cd dispatch
 
 # Build release binaries

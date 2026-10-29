@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dispatch - send big files across your network</title>
+<meta name="description" content="Dispatch sends large files between computers on the same network. Encrypted, no internet, no cloud, no accounts.">
+<style>
+:root{--desk:#8d897e;--face:#cdc9bd;--hi:#fffdf4;--mid:#98948a;--lo:#403e37;--ink:#14130f;--field:#fffef7;--title:#233a73;--tink:#fff;color-scheme:light}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--desk:#1b1b1d;--face:#303033;--hi:#5d5d62;--mid:#1f1f21;--lo:#0a0a0b;--ink:#e8e5da;--field:#19191b;--title:#3d5a99;color-scheme:dark}}
+:root[data-theme=dark]{--desk:#1b1b1d;--face:#303033;--hi:#5d5d62;--mid:#1f1f21;--lo:#0a0a0b;--ink:#e8e5da;--field:#19191b;--title:#3d5a99;color-scheme:dark}
+*{box-sizing:border-box}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;min-height:100%;background:var(--desk);color:var(--ink);font:14px/1.5 Tahoma,Verdana,"DejaVu Sans",sans-serif}
+.win{max-width:780px;margin:16px auto;background:var(--face);box-shadow:inset -1px -1px var(--lo),inset 1px 1px var(--hi),inset -2px -2px var(--mid),inset 2px 2px var(--face),6px 6px 0 var(--lo)}
+@media(max-width:820px){.win{margin:8px}}
+.tb{background:var(--title);color:var(--tink);font-weight:700;padding:3px 8px;margin:3px 3px 0}
+.in{padding:16px 18px 20px;display:grid;gap:14px}
+h1{margin:0;font-size:26px;line-height:1.2}
+.lead{margin:0;max-width:56ch}
+fieldset{margin:0;padding:10px 14px 14px;border:1px solid var(--mid);box-shadow:1px 1px var(--hi),inset 1px 1px var(--hi);min-width:0}
+legend{padding:0 4px}
+.sunk{background:var(--field);box-shadow:inset 1px 1px var(--mid),inset -1px -1px var(--hi),inset 2px 2px var(--lo),inset -2px -2px var(--face)}
+a{color:inherit}
+.btn{display:inline-block;color:var(--ink);background:var(--face);text-decoration:none;padding:4px 14px;box-shadow:inset -1px -1px var(--lo),inset 1px 1px var(--hi),inset -2px -2px var(--mid),inset 2px 2px var(--face)}
+.btn:active{box-shadow:inset 1px 1px var(--lo),inset -1px -1px var(--hi),inset 2px 2px var(--mid);padding:5px 13px 3px 15px}
+.btn:focus-visible{outline:1px dotted var(--ink);outline-offset:-5px}
+.big{font-size:16px;font-weight:700;padding:10px 22px;box-shadow:0 0 0 1px var(--ink),inset -1px -1px var(--lo),inset 1px 1px var(--hi),inset -2px -2px var(--mid),inset 2px 2px var(--face)}
+.big:active{padding:11px 21px 9px 23px}
+.meta{margin:10px 0 0;color:var(--ink);opacity:.7;font-size:12px}
+.tw{overflow-x:auto;margin-top:12px}
+table{width:100%;border-collapse:collapse;white-space:nowrap}
+th{font-weight:400;text-align:left;padding:2px 8px;background:var(--face);box-shadow:inset -1px -1px var(--lo),inset 1px 1px var(--hi),inset -2px -2px var(--mid)}
+td{padding:4px 8px}
+td .btn{padding:1px 10px;font-size:12px}
+ol,ul{margin:0;padding-left:22px;display:grid;gap:6px}
+pre{margin:6px 0 0;padding:8px 10px;overflow-x:auto;font:12px/1.5 "Courier New","DejaVu Sans Mono",monospace}
+code{font:12px "Courier New","DejaVu Sans Mono",monospace}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:640px){.cols{grid-template-columns:1fr}}
+.foot{margin:0;font-size:12px;opacity:.75}
+</style></head>
+<body>
+<main class="win">
+<div class="tb">Dispatch - Download</div>
+<div class="in">
+<h1>Dispatch</h1>
+<p class="lead">Send large files between computers on the same network. Encrypted, no internet needed, no cloud, no accounts.</p>
+
+<fieldset><legend>Download</legend>
+<a id="main" class="btn big" href="https://github.com/shadowofaroman/dispatch/releases/latest">Download</a>
+<p class="meta" id="meta">Checking for the latest release...</p>
+<div class="tw sunk"><table><thead><tr><th>System</th><th>Package</th><th>Size</th><th></th></tr></thead><tbody id="tb"></tbody></table></div>
+<p class="meta">Windows and Linux for now. macOS is not available yet.</p>
+</fieldset>
+
+<fieldset><legend>First transfer</legend>
+<ol>
+<li>Install Dispatch on both computers.</li>
+<li>On the receiving computer, open Dispatch and click Start listening.</li>
+<li>On the sending computer, pick the device in the list, choose a file and click Send.</li>
+<li>The first time two computers meet, both screens show a 6-digit code. Click Codes match only if the codes are identical.</li>
+</ol></fieldset>
+
+<div class="cols">
+<fieldset><legend>What it does</legend>
+<ul>
+<li>Every transfer is encrypted and mutually authenticated. There is no unencrypted mode.</li>
+<li>If a trusted device turns up with a different key, Dispatch refuses it and warns you.</li>
+<li>Files move in 4 MiB blocks. Each block is checked, then the whole file is checked at the end.</li>
+<li>Speed is the speed of your network. On a 100 Mbps link that is about 11 MB/s. Going beyond that needs gigabit Ethernet at both ends.</li>
+</ul></fieldset>
+<fieldset><legend>Before you install</legend>
+<ul>
+<li>Windows may say Windows protected your PC, because the installer is not code-signed yet. Choose More info, then Run anyway.</li>
+<li>Windows Firewall: allow Dispatch on Private networks when it asks.</li>
+<li>Both computers must be on the same network, or joined by a cable. Dispatch uses UDP 47600 and TCP 47601.</li>
+</ul></fieldset>
+</div>
+
+<fieldset><legend>Check your download</legend>
+<p style="margin:0">Compare the hash of the file you downloaded with <a id="sums" href="https://github.com/shadowofaroman/dispatch/releases/latest">SHA256SUMS.txt</a> from the same release.</p>
+<pre class="sunk"># Linux
+sha256sum Dispatch_*.deb
+
+# Windows (PowerShell)
+Get-FileHash .\Dispatch_*_x64-setup.exe</pre>
+<p class="meta" style="margin-top:10px">Linux install: <code>sudo apt install ./Dispatch_*.deb</code>. For the AppImage, run <code>chmod +x Dispatch_*.AppImage</code> first.</p>
+</fieldset>
+
+<p class="foot">Dispatch is open source. Source and issues are on <a href="https://github.com/shadowofaroman/dispatch">GitHub</a>. Built by Elkana Liman.</p>
+</div>
+</main>
+
+<script>
+const $=s=>document.querySelector(s),REPO='shadowofaroman/dispatch',REL='https://github.com/'+REPO+'/releases/latest';
+const ROWS=[
+['windows','Windows','Installer (.exe)',/-setup\.exe$/i],
+['windows','Windows','MSI package',/\.msi$/i],
+['linux','Linux','.deb for Debian, Ubuntu, Pop!_OS',/\.deb$/i],
+['linux','Linux','AppImage',/\.AppImage$/i],
+['linux','Linux','.rpm for Fedora',/\.rpm$/i]];
+const ua=navigator.userAgent;
+const me=/Windows/i.test(ua)?'windows':/Android|iPhone|iPad|Mac/i.test(ua)?'other':/Linux|X11/i.test(ua)?'linux':'other';
+
+function render(rel){
+ const as=(rel&&rel.assets)||[],body=$('#tb');body.innerHTML='';let primary=null;
+ for(const [os,sys,label,re] of ROWS){
+  const a=as.find(x=>re.test(x.name)),tr=document.createElement('tr');
+  tr.innerHTML='<td>'+sys+'</td><td>'+label+'</td><td>'+(a?(a.size/1048576).toFixed(1)+' MiB':'')+'</td><td></td>';
+  const l=document.createElement('a');l.className='btn';l.textContent=a?'Download':'Releases page';l.href=a?a.browser_download_url:REL;
+  tr.lastChild.append(l);body.append(tr);
+  if(!primary&&os===me)primary={a,sys,label}}
+ const m=$('#main');
+ if(primary){m.textContent='Download for '+primary.sys;m.href=primary.a?primary.a.browser_download_url:REL}
+ else{m.textContent='See all downloads';m.href='#tb'}
+ $('#meta').textContent=rel&&rel.tag_name
+  ?'Version '+rel.tag_name+', released '+String(rel.published_at||'').slice(0,10)+'.'
+  :'No release is published yet. The buttons open the releases page, where installers will appear after the first release.';
+ const s=as.find(x=>/SHA256SUMS/i.test(x.name));if(s)$('#sums').href=s.browser_download_url}
+
+render(null);
+fetch('https://api.github.com/repos/'+REPO+'/releases/latest')
+ .then(r=>r.ok?r.json():null).catch(()=>null).then(rel=>{if(rel)render(rel)});
+</script>
+</body></html>

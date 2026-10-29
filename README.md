@@ -197,3 +197,6 @@ Dispatch decomposes files into **4 MiB blocks**.
    Machines with multiple active network interfaces (e.g., active WiFi and plugged-in Ethernet simultaneously) send broadcast announcements across all interfaces. In rare topologies where routers isolate broadcast domains between interfaces, the `--addr <ip:port>` fallback allows direct point-to-point connection.
 4. **In-Memory Frame Limits:**
    Frames are strictly bounded at 64 KiB ciphertext. Systems with low RAM (e.g., small embedded boards) can safely stream 50 GB+ files because memory consumption never exceeds small I/O buffer pools (~4 MiB).
+
+
+   **This tool was built by Elkana Liman**

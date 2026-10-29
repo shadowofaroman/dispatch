@@ -2,6 +2,7 @@
 members = [
     "crates/dispatch-core",
     "crates/dispatch-cli",
+    "crates/dispatch-gui"
 ]
 resolver = "2"
 

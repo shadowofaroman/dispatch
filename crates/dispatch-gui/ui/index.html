@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dispatch</title>
+<style>
+:root{--face:#cdc9bd;--hi:#fffdf4;--mid:#98948a;--lo:#403e37;--ink:#14130f;--field:#fffef7;--title:#233a73;--tink:#fff;--sel:#233a73;--bad:#a31f1f;--cell:#233a73;--cellr:#8ea0cf;color-scheme:light}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--face:#303033;--hi:#5d5d62;--mid:#1f1f21;--lo:#0a0a0b;--ink:#e8e5da;--field:#19191b;--title:#3d5a99;--sel:#3d5a99;--bad:#d9534f;--cell:#7d9be0;--cellr:#46567f;color-scheme:dark}}
+:root[data-theme=dark]{--face:#303033;--hi:#5d5d62;--mid:#1f1f21;--lo:#0a0a0b;--ink:#e8e5da;--field:#19191b;--title:#3d5a99;--sel:#3d5a99;--bad:#d9534f;--cell:#7d9be0;--cellr:#46567f;color-scheme:dark}
+*{box-sizing:border-box}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;min-height:100%;background:var(--face);color:var(--ink);font:13px/1.4 Tahoma,Verdana,"DejaVu Sans",sans-serif}
+.sr{position:absolute;left:-9999px}
+#app{max-width:880px;margin:0 auto;padding:8px;display:grid;gap:8px}
+.sunk{background:var(--field);box-shadow:inset 1px 1px var(--mid),inset -1px -1px var(--hi),inset 2px 2px var(--lo),inset -2px -2px var(--face)}
+fieldset{margin:0;padding:8px 10px 10px;border:1px solid var(--mid);box-shadow:1px 1px var(--hi),inset 1px 1px var(--hi);min-width:0}
+legend{padding:0 4px}
+button{font:inherit;color:var(--ink);background:var(--face);border:0;padding:4px 14px;min-height:24px;cursor:default;box-shadow:inset -1px -1px var(--lo),inset 1px 1px var(--hi),inset -2px -2px var(--mid),inset 2px 2px var(--face)}
+button.def{box-shadow:0 0 0 1px var(--ink),inset -1px -1px var(--lo),inset 1px 1px var(--hi),inset -2px -2px var(--mid),inset 2px 2px var(--face)}
+button:active:not(:disabled){box-shadow:inset 1px 1px var(--lo),inset -1px -1px var(--hi),inset 2px 2px var(--mid);padding:5px 13px 3px 15px}
+button:disabled{color:var(--mid);text-shadow:1px 1px var(--hi)}
+button:focus-visible,tr:focus-visible{outline:1px dotted var(--ink);outline-offset:-5px}
+input[type=text]{font:inherit;color:var(--ink);border:0;padding:3px 5px;min-height:24px;width:100%}
+.bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.bar input{width:170px}
+.id{margin-left:auto;font:12px "Courier New","DejaVu Sans Mono",monospace}
+.cols{display:grid;grid-template-columns:1.15fr 1fr;gap:8px}
+.cols>div{display:grid;gap:8px;align-content:start}
+@media(max-width:640px){.cols{grid-template-columns:1fr}}
+.list{height:150px;overflow:auto}
+table{width:100%;border-collapse:collapse}
+th{font-weight:400;text-align:left;padding:2px 6px;background:var(--face);box-shadow:inset -1px -1px var(--lo),inset 1px 1px var(--hi),inset -2px -2px var(--mid)}
+td{padding:2px 6px}
+tr.sel td{background:var(--sel);color:#fff}
+#drop{min-height:78px;display:grid;place-items:center;text-align:center;padding:10px;outline:1px dashed var(--mid);outline-offset:-6px}
+#drop.over{outline:1px solid var(--ink)}
+.row{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-top:8px}
+#xs{min-height:60px;padding:4px 6px}
+.hint{margin:10px 4px;color:var(--mid)}
+.xfer{padding:6px 0;border-bottom:1px solid var(--mid)}
+.xfer:last-child{border:0}
+.top,.bot{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.top{margin-bottom:4px}
+.bot{margin-top:4px}
+.bot button{padding:1px 10px;min-height:20px}
+canvas{display:block;width:100%;height:14px}
+.status{display:grid;grid-template-columns:1fr auto;gap:2px;font-size:12px}
+.status>div{padding:2px 8px;min-height:22px}
+dialog{padding:0;border:0;color:var(--ink);background:var(--face);width:min(390px,calc(100vw - 24px));box-shadow:inset -1px -1px var(--lo),inset 1px 1px var(--hi),inset -2px -2px var(--mid),inset 2px 2px var(--face),5px 5px 0 var(--lo)}
+dialog::backdrop{background:rgba(0,0,0,.3)}
+.tb{background:var(--title);color:var(--tink);font-weight:700;padding:3px 6px;margin:3px 3px 0}
+.bd{padding:12px 14px 14px}
+.bd p{margin:0 0 8px}
+.code{font:700 30px/1.2 "Courier New","DejaVu Sans Mono",monospace;letter-spacing:.12em;text-align:center;padding:10px;margin:10px 0}
+.acts{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
+.stop{flex:none;width:34px;height:34px;border-radius:50%;background:var(--bad);position:relative}
+.stop::after{content:"";position:absolute;left:8px;right:8px;top:15px;height:4px;background:#fff}
+.alert{display:flex;gap:12px;align-items:flex-start}
+</style></head>
+<body>
+<h1 class="sr">Dispatch</h1>
+<div id="app">
+<fieldset><legend>This computer</legend>
+<div class="bar"><label for="nm">Name</label><input id="nm" type="text" class="sunk"><button id="ren">Rename</button><span class="id">ID <span id="id"></span></span></div></fieldset>
+
+<div class="cols">
+<fieldset><legend>Devices on this network</legend>
+<div class="list sunk"><table><thead><tr><th>Name</th><th>Address</th><th>Status</th></tr></thead><tbody id="pb"></tbody></table></div></fieldset>
+<div>
+<fieldset><legend>Send a file</legend>
+<div id="drop" class="sunk"><span id="fl"></span></div>
+<div class="row"><span>To: <b id="to"></b></span><span class="bar"><button id="pick">Choose file...</button><button id="send" class="def" disabled>Send</button></span></div>
+<input id="fi" type="file" hidden></fieldset>
+<fieldset><legend>Receive files</legend>
+<div class="bar"><label for="dir">Save in</label><input id="dir" type="text" class="sunk" value="~/received" style="flex:1;width:auto"><button id="lbtn">Start listening</button></div></fieldset>
+</div></div>
+
+<fieldset><legend>Transfers</legend>
+<div id="xs" class="sunk"><p class="hint" id="ex">No transfers yet. Choose a device, then drop a file on the Send box.</p></div></fieldset>
+
+<fieldset id="sim"><legend>Simulator (browser preview only)</legend>
+<div class="bar"><button id="s1">Simulate incoming file</button><button id="s2">Simulate changed key</button></div></fieldset>
+
+<div class="status"><div class="sunk" id="msg">Ready.</div><div class="sunk" id="lis">Not listening</div></div>
+</div>
+
+<dialog id="dlg"><div class="tb" id="tb"></div><div class="bd" id="bd"></div></dialog>
+
+<script>
+const $=s=>document.querySelector(s),T=window.__TAURI__,MiB=1048576;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt=n=>n>=1024*MiB?(n/1024/MiB).toFixed(2)+' GiB':(n/MiB).toFixed(1)+' MiB';
+const eta=s=>s==null?'':s>=60?Math.floor(s/60)+'m '+(s%60)+'s':s+'s';
+let peers=new Map(),sel=null,file=null,xs=new Map(),q=[],listening=false,lastSend=null;
+const say=m=>{$('#msg').textContent=m};
+const call=(c,a)=>T?T.core.invoke(c,a):mock(c,a||{});
+
+function renderPeers(){const b=$('#pb');b.innerHTML='';
+ if(!peers.size){b.innerHTML='<tr><td colspan="3">No devices found yet. Start listening on the other computer.</td></tr>';return}
+ for(const p of peers.values()){const r=document.createElement('tr');r.tabIndex=0;r.className=p.device_id===sel?'sel':'';
+  r.innerHTML='<td>'+esc(p.name)+'</td><td>'+esc(p.addr)+'</td><td>'+(p.trusted?'trusted':'new')+'</td>';
+  const pick=()=>{sel=p.device_id;[...b.children].forEach(x=>x.classList.toggle('sel',x===r));upd()};
+  r.onclick=pick;r.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pick()}};b.append(r)}}
+function upd(){const p=peers.get(sel);$('#to').textContent=p?p.name:'none selected';$('#send').disabled=!(p&&file);
+ $('#fl').innerHTML=file?'<b>'+esc(file.name)+'</b>'+(file.size?'<br>'+fmt(file.size):''):'Drop a file here or choose one.'}
+
+function draw(x){const c=x.cv,w=c.clientWidth;if(!w)return;const r=devicePixelRatio||1,h=14;c.width=w*r;c.height=h*r;
+ const g=c.getContext('2d');g.scale(r,r);const S=getComputedStyle(document.documentElement),on=S.getPropertyValue('--cell'),re=S.getPropertyValue('--cellr'),off=S.getPropertyValue('--mid');
+ const n=Math.max(1,Math.min(x.blocks,48)),gap=2,cw=(w-gap*(n-1))/n,f=x.size?x.bytes/x.size*n:0,rs=x.blocks?x.resumed/x.blocks*n:0;
+ for(let i=0;i<n;i++){const px=i*(cw+gap);g.fillStyle=off;g.fillRect(px,0,cw,h);const p=Math.max(0,Math.min(1,f-i));if(p>0){g.fillStyle=i<rs?re:on;g.fillRect(px,0,cw*p,h)}}}
+function paint(x,ev){const s=x.el.querySelector('.st'),bt=x.el.querySelector('.btns');bt.innerHTML='';
+ const add=(l,fn)=>{const b=document.createElement('button');b.textContent=l;b.onclick=fn;bt.append(b)};
+ const old=x.resumed?' '+x.resumed+' of '+x.blocks+' blocks were already there.':'';
+ if(x.state==='run'){s.textContent=fmt(x.bytes)+' of '+fmt(x.size)+', '+(ev&&ev.bytes_per_sec?(ev.bytes_per_sec/MiB).toFixed(1)+' MiB/s, ':'')+eta(ev&&ev.eta_secs)+' left.'+old;add('Cancel',()=>call('cancel_transfer',{transferId:x.id}))}
+ else{s.textContent=(x.state==='done'?(x.verified?'Finished and checked byte for byte.':'Finished.'):x.reason+(x.resumable&&x.out?' Resuming keeps finished blocks.':''))+old;
+  if(x.state==='fail'&&x.resumable&&x.out&&x.send)add('Resume',()=>{x.el.remove();xs.delete(x.id);hint();call('send_file',x.send)});
+  add('Remove',()=>{x.el.remove();xs.delete(x.id);hint()})}
+ draw(x)}
+const hint=()=>{$('#ex').style.display=xs.size?'none':''};
+
+function handle(e){switch(e.type){
+ case'peer_found':peers.set(e.peer.device_id,e.peer);renderPeers();upd();break;
+ case'peer_lost':peers.delete(e.device_id);if(sel===e.device_id)sel=null;renderPeers();upd();break;
+ case'listening_changed':listening=e.active;$('#lis').textContent=e.active?'Listening, saving to '+(e.dir||''):'Not listening';$('#lbtn').textContent=e.active?'Stop listening':'Start listening';break;
+ case'sas_required':case'incoming_offer':case'key_mismatch':q.push(e);next();break;
+ case'transfer_started':{const el=document.createElement('div');el.className='xfer';
+  el.innerHTML='<div class="top"><b class="nm"></b><span class="who"></span></div><canvas></canvas><div class="bot"><span class="st"></span><span class="btns"></span></div>';
+  el.querySelector('.nm').textContent=e.name;el.querySelector('.who').textContent=e.outgoing?'Sending':'Receiving';
+  const x={id:e.id,name:e.name,size:e.size,out:e.outgoing,blocks:Math.ceil(e.size/(4*MiB)),resumed:e.resumed_blocks||0,bytes:(e.resumed_blocks||0)*4*MiB,state:'run',el,cv:el.querySelector('canvas'),send:e.outgoing?lastSend:null};
+  xs.set(x.id,x);$('#xs').prepend(el);hint();paint(x);say((e.outgoing?'Sending ':'Receiving ')+e.name+'.');break}
+ case'transfer_progress':{const x=xs.get(e.id);if(x){x.bytes=e.bytes;paint(x,e)}break}
+ case'transfer_done':{const x=xs.get(e.id);if(x){x.state='done';x.bytes=x.size;x.verified=e.verified;paint(x);say(x.name+' finished.')}break}
+ case'transfer_failed':{const x=xs.get(e.id);if(x){x.state='fail';x.reason=e.reason+'.';x.resumable=e.resumable;paint(x);say(x.name+' stopped.')}break}}}
+
+const dlg=$('#dlg');dlg.addEventListener('cancel',e=>e.preventDefault());
+function show(title,html,btns){$('#tb').textContent=title;$('#bd').innerHTML=html+'<div class="acts"></div>';
+ btns.forEach(([l,fn,d])=>{const b=document.createElement('button');b.textContent=l;if(d)b.className='def';b.onclick=()=>{dlg.close();fn();next()};$('#bd .acts').append(b)});dlg.showModal()}
+function next(){if(dlg.open||!q.length)return;const e=q.shift();
+ if(e.type==='sas_required')show('Verify new device','<p>'+esc(e.peer.name)+' is connecting for the first time. Both screens should show this code.</p><div class="code sunk">'+esc(e.code)+'</div><p>Continue only if the codes are identical.</p>',[['Codes match',()=>call('respond_sas',{requestId:e.request_id,accept:true}),1],['Cancel',()=>call('respond_sas',{requestId:e.request_id,accept:false})]]);
+ else if(e.type==='incoming_offer')show('Incoming file','<p>'+esc(e.peer.name)+' wants to send you a file.</p><p><b>'+esc(e.name)+'</b><br>'+fmt(e.size)+'</p>',[['Accept',()=>call('respond_offer',{offerId:e.offer_id,accept:true}),1],['Decline',()=>call('respond_offer',{offerId:e.offer_id,accept:false})]]);
+ else show('Security alert','<div class="alert"><div class="stop"></div><div><p><b>The connection was refused.</b></p><p>The device named '+esc(e.peer.name)+' is using a different key than the one you trusted before. Someone on this network may be pretending to be it.</p><p>Do not send or accept files until you have checked with the owner.</p></div></div>',[['OK',()=>{},1]])}
+
+function setFile(f){file=f;upd()}
+$('#pick').onclick=()=>T&&T.dialog?T.dialog.open({multiple:false}).then(p=>p&&setFile({path:p,name:p.split(/[\\/]/).pop()})):$('#fi').click();
+$('#fi').onchange=e=>{const f=e.target.files[0];if(f){FILES[f.name]=f.size;setFile({path:f.name,name:f.name,size:f.size})}};
+const dz=$('#drop');
+dz.ondragover=e=>{e.preventDefault();dz.classList.add('over')};dz.ondragleave=()=>dz.classList.remove('over');
+dz.ondrop=e=>{e.preventDefault();dz.classList.remove('over');const f=e.dataTransfer.files[0];if(f){FILES[f.name]=f.size;setFile({path:f.name,name:f.name,size:f.size})}};
+if(T)T.event.listen('tauri://drag-drop',e=>{const p=e.payload.paths&&e.payload.paths[0];if(p)setFile({path:p,name:p.split(/[\\/]/).pop()})});
+$('#send').onclick=()=>{lastSend={path:file.path,peerId:sel};call('send_file',lastSend).catch(err=>say(String(err)))};
+$('#lbtn').onclick=()=>call(listening?'stop_listening':'start_listening',{dir:$('#dir').value});
+$('#ren').onclick=()=>call('set_device_name',{name:$('#nm').value}).then(()=>say('This computer is now called '+$('#nm').value+'.'));
+const redraw=()=>xs.forEach(draw);addEventListener('resize',redraw);matchMedia('(prefers-color-scheme: dark)').addEventListener('change',redraw);
+
+const FILES={};
+const PEERS=[{device_id:'75e4304ea16e3b7e',name:'win-pc',addr:'10.46.70.151:47601',trusted:true},{device_id:'9c01d2e87f4a1b33',name:'studio-mac',addr:'10.46.70.162:47601',trusted:false}];
+let mid=0,tm={},S={},pend={},prev={};
+const ev=e=>setTimeout(()=>handle(e),0);
+function go(id,name,size,out){const bl=Math.ceil(size/(4*MiB)),have=Math.min(prev[name]||0,bl-1);S[id]={b:have*4*MiB,name,bl};
+ ev({type:'transfer_started',id,name,size,outgoing:out,resumed_blocks:have});
+ tm[id]=setInterval(()=>{const r=(9.5+Math.random()*2)*MiB,s=S[id];s.b=Math.min(size,s.b+r/10);
+  ev({type:'transfer_progress',id,bytes:s.b,total:size,bytes_per_sec:r,eta_secs:Math.ceil((size-s.b)/r)});
+  if(s.b>=size){clearInterval(tm[id]);delete prev[name];ev({type:'transfer_done',id,path:null,verified:true,avg_bytes_per_sec:r})}},100)}
+function mock(c,a){switch(c){
+ case'get_identity':return Promise.resolve({name:'pop-os',id:'4f8c 2e19 b7a0 31d4'});
+ case'list_peers':return Promise.resolve(PEERS);
+ case'set_device_name':return Promise.resolve();
+ case'start_listening':ev({type:'listening_changed',active:true,dir:a.dir});return Promise.resolve();
+ case'stop_listening':ev({type:'listening_changed',active:false});return Promise.resolve();
+ case'send_file':{const p=PEERS.find(x=>x.device_id===a.peerId),id=++mid,sz=FILES[a.path]||200*MiB;
+  if(p.trusted)go(id,a.path,sz,true);else{const rid=++mid,d=String(Math.floor(Math.random()*1e6)).padStart(6,'0');
+   pend[rid]=ok=>{if(ok){p.trusted=true;ev({type:'peer_found',peer:p});go(id,a.path,sz,true)}else say('Send cancelled. The codes did not match.')};
+   ev({type:'sas_required',request_id:rid,peer:p,code:d.slice(0,3)+' '+d.slice(3)})}
+  return Promise.resolve(id)}
+ case'cancel_transfer':{const s=S[a.transferId];clearInterval(tm[a.transferId]);prev[s.name]=Math.floor(s.b/(4*MiB));ev({type:'transfer_failed',id:a.transferId,reason:'Cancelled',resumable:true});return Promise.resolve()}
+ case'respond_sas':pend[a.requestId](a.accept);return Promise.resolve();
+ case'respond_offer':pend[a.offerId](a.accept);return Promise.resolve()}}
+if(T)$('#sim').remove();else{
+ $('#s1').onclick=()=>{const oid=++mid;pend[oid]=ok=>ok?go(++mid,'Fireworks_Hackathon_V01.mp4',200.74*MiB,false):say('Declined the incoming file.');
+  ev({type:'incoming_offer',offer_id:oid,peer:PEERS[0],name:'Fireworks_Hackathon_V01.mp4',size:200.74*MiB})};
+ $('#s2').onclick=()=>ev({type:'key_mismatch',peer:PEERS[0]})}
+
+if(T)T.event.listen('dispatch://event',e=>handle(e.payload));
+call('get_identity').then(i=>{$('#nm').value=i.name;$('#id').textContent=i.id});
+call('list_peers').then(l=>{l.forEach(p=>peers.set(p.device_id,p));renderPeers();upd()});
+</script>
+</body></html>
